@@ -257,6 +257,7 @@ func (r *Reflector) ListAndWatch(stopCh <-chan struct{}) error {
 
 	options := metav1.ListOptions{ResourceVersion: r.relistResourceVersion()}
 
+	// list 逻辑
 	if err := func() error {
 		initTrace := trace.New("Reflector ListAndWatch", trace.Field{"name", r.name})
 		defer initTrace.LogIfLong(10 * time.Second)
@@ -362,6 +363,7 @@ func (r *Reflector) ListAndWatch(stopCh <-chan struct{}) error {
 		return err
 	}
 
+	// resync 存储逻辑
 	resyncerrc := make(chan error, 1)
 	cancelCh := make(chan struct{})
 	defer close(cancelCh)
@@ -390,6 +392,7 @@ func (r *Reflector) ListAndWatch(stopCh <-chan struct{}) error {
 		}
 	}()
 
+	// watch 逻辑
 	for {
 		// give the stopCh a chance to stop the loop, even in case of continue statements further down on errors
 		select {
